@@ -1,0 +1,11 @@
+---
+# defaults file for swapfile-ansible-role
+
+swapfile_path: /swap
+swapfile_filename: swapfile
+swapfile_state: present
+
+swapfile_size_mb: "{{ ansible_memtotal_mb }}"
+
+swapfile_swappiness: False
+swapfile_vfs_cache_pressure: False

@@ -1,0 +1,20 @@
+---
+# tasks file for swapfile-ansible-role
+
+- name: Remove swap file entry from fstab
+  mount:
+    name: none
+    src: "{{ swapfile_full_path }}"
+    fstype: swap
+    opts: sw
+    dump: 0
+    passno: 0
+    state: absent
+
+- name: Disable swap file
+  command: swapoff {{ swapfile_full_path }}
+
+- name: Remove swap file
+  file:
+    name: "{{ swapfile_full_path }}"
+    state: absent

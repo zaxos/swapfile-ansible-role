@@ -1,0 +1,43 @@
+---
+# tasks file for swapfile-ansible-role
+
+- name: Ensure swap file path presence
+  file:
+    name: "{{ swapfile_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Check swap file presence
+  stat:
+    path: "{{ swapfile_full_path }}"
+  register: swapfile_stat
+ 
+- name: Write swap file
+  command: dd if=/dev/zero of={{ swapfile_full_path }} count={{ swapfile_size_mb }} bs=1MB
+  when: swapfile_stat.stat.exists == False
+
+- name: Ensure swap file permisions
+  file:
+    name: "{{ swapfile_full_path }}"
+    state: file
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Create swap file
+  command: mkswap {{ swapfile_full_path }}
+
+- name: Enable swap file
+  command: swapon {{ swapfile_full_path }}
+
+- name: Add swap file to fstab
+  mount:
+    name: none
+    src: "{{ swapfile_full_path }}"
+    fstype: swap
+    opts: sw
+    dump: 0
+    passno: 0
+    state: present

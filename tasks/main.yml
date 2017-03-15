@@ -1,0 +1,26 @@
+---
+# tasks file for swapfile-ansible-role
+
+- name: Set fact swapfile full path
+  set_fact:
+    swapfile_full_path: "{{ swapfile_path }}/{{ swapfile_filename }}"
+
+- name: Gather current swap facts
+  shell: swapon -s
+  register: swapfile_swapon_s
+  changed_when: False
+
+- name: Add swapfile
+  include: add-swapfile.yml
+  when: >
+    swapfile_state == 'present' and
+    swapfile_full_path not in swapfile_swapon_s.stdout
+
+- name: Configure sysctl
+  include: configure-sysctl.yml
+
+- name: Remove swapfile
+  include: remove-swapfile.yml
+  when: >
+    swapfile_state == 'absent' and
+    swapfile_full_path in swapfile_swapon_s.stdout
