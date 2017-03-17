@@ -5,9 +5,6 @@
   file:
     name: "{{ swapfile_path }}"
     state: directory
-    owner: root
-    group: root
-    mode: 0600
 
 - name: Check swap file presence
   stat:
